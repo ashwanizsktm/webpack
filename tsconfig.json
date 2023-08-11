@@ -1,0 +1,31 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./src",
+		"outDir": "./dist/out-tsc",
+		"sourceMap": true,
+		"declaration": false,
+		"moduleResolution": "node",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"resolveJsonModule": true,
+    	"esModuleInterop": true,
+		"target": "esnext",
+        "module": "CommonJS",
+		"skipLibCheck": true,
+		"typeRoots": [
+			"node_modules/@types"
+		],
+		"lib": [
+			"ES2019",
+			"dom"
+		],
+	    "paths": {
+			"@app/*": ["app/*"],
+			"@configs/*":["configs/*"]
+        }
+	},
+    "exclude": [
+		"**/*.spec.ts",
+		"node_modules"
+	]
+}

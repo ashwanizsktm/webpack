@@ -1,0 +1,43 @@
+// global variables
+$action-btn-bg: #131313;
+$light-bg: #FFFFFF;
+$primary: #1f1f1f;
+$primary-grey-txt:  #585858;
+$dark-color: #000000;
+
+// home variables
+$body-bg: #f5f5f5;
+
+// nav variables
+$nav-text: #7B7B7B;
+$nav-text-active : #251FD3;
+
+// bar graph variables
+$primary-bar-bg: #5C79E3;
+$secondary-bar-bg: #F5C66F;
+
+// sort option
+$sort-option-color: #222222;
+$sort-by-color: #585858;
+$dropdown-bg-color: #F7F7F7;
+
+// $sort-option-color:#222222;
+// $sort-by-color:#929292;
+
+// font weight
+$font-weight: (
+  "lighter": 200,
+  "light": 300,
+  "regular": 400,
+  "medium": 500,
+  "bold": 700,
+  "bolder": 800,
+  "extrabold": 900,
+);
+
+//checkbox
+$checkbox-bg : #ffffff;
+$checkbox-boder-bg : #cbcbcb;
+$checkbox-height: 20px;
+$checkbox-width: 20px;
+$checked-bgcolor :$primary-grey-txt;

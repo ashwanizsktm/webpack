@@ -1,0 +1,162 @@
+//  buttons
+@use './variables';
+
+@mixin font($size: false, $colour: false, $weight: false, $lh: false) {
+    @if $size {
+        font-size: $size;
+    }
+
+    @if $colour {
+        color: $colour;
+    }
+
+    @if $weight {
+        font-weight: $weight;
+    }
+
+    @if $lh {
+        line-height: $lh;
+    }
+
+    @media (min-width: $media-breakpoint-lg) {
+        @if $size {
+            font-size: calc(#{$size} + #{strip-unit($size)} * (100vw - 1400px) / 2000);
+        }
+    }
+}
+
+@mixin text-overflow($nowrap: false) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    @if $nowrap {
+        white-space: nowrap;
+    }
+}
+
+@mixin max-lines($lines, $line-height, $max-height-flag: true) {
+    @include text-overflow();
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $lines;
+    line-height: $line-height;
+
+    @if ($max-height-flag) {
+        max-height: $line-height * $lines + em;
+    }
+}
+
+@mixin word-wrap() {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+@mixin transition($property, $duration, $easing: linear) {
+    transition: $property $duration $easing;
+    -webkit-transition: $property $duration $easing;
+    -moz-transition: $property $duration $easing;
+}
+
+@mixin border-radius($radius: $default-border-radius) {
+    -moz-border-radius: $radius;
+    -webkit-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+// box shadow with browser supports.
+@mixin box-shadow($x-axis, $y-axis, $blur, $size, $color) {
+    -webkit-box-shadow: $x-axis $y-axis $size $color;
+    -moz-box-shadow: $x-axis $y-axis $size $color;
+    -moz-box-shadow: $x-axis $y-axis $size $color;
+    box-shadow: $x-axis $y-axis $size $color;
+}
+
+// mixins for ellipses
+// ellipses common.
+@mixin ellipses($width) {
+    width: $width;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -moz-white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
+}
+
+@mixin pseudo($loc: before,
+    $content: "",
+    $pos: absolute,
+    $top: 0,
+    $bottom: 0,
+    $left: 0,
+    $right: 0) {
+    position: relative;
+
+    &::#{$loc} {
+        content: $content;
+        position: $pos;
+        top: $top;
+        bottom: $bottom;
+        left: $left;
+        right: $right;
+        @content;
+    }
+}
+
+// mixins to create flex properties with basic required properties and flex center as well
+@mixin flexbox($justify-content: center, $direction: row, $align-items: center) {
+    display: flex;
+
+    @if $justify-content !="center" {
+        justify-content: $justify-content;
+    }
+
+    @else {
+        justify-content: center;
+    }
+
+    @if $direction  !="row" {
+        flex-direction: $direction;
+    }
+
+    @else {
+        flex-direction: row;
+    }
+
+    @if $align-items  !="center" {
+        align-items: $align-items;
+    }
+
+    @else {
+        align-items: center;
+    }
+}
+
+// mixin to remove all default button style.
+@mixin reset-button-style {
+    background: none;
+    border: none;
+    outline: none;
+
+    &:hover {
+        cursor: pointer;
+        outline: none;
+    }
+}
+
+
+@mixin hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

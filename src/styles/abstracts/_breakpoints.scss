@@ -1,0 +1,38 @@
+// breakpoints
+//media variables
+$media-breakpoint-xs: 376px;
+$media-breakpoint-sm: 576px;
+$media-breakpoint-md: 768px;
+$media-breakpoint-lg: 992px;
+$media-breakpoint-xl: 1200px;
+
+@mixin breakpoint($point) {
+    @if $point ==mobile {
+        @media screen and(min-width : $media-breakpoint-sm) {
+            @content;
+        }
+    }
+
+    @else if $point ==tablet {
+        @media screen and(max-width : $media-breakpoint-md) {
+            @content;
+        }
+    }
+
+    @else if $point ==desktop {
+        @media screen and(max-width : $media-breakpoint-lg) {
+            @content;
+        }
+    }
+    
+    @else if $point ==largescreens {
+        @media screen and(max-width : $media-breakpoint-xl) {
+            @content;
+        }
+    }
+}
+
+// how to use
+// @include breakpoint(desktop) {
+//   background-color: red;
+// }

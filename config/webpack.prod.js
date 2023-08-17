@@ -186,6 +186,7 @@ module.exports = () => {
 				title: 'webpack angular',
 				template: "src/index.html",
 				gtmKey: '', // Google Tag Manager key
+				inject: 'body',
 				minify: {
 					caseSensitive: true,
 					collapseWhitespace: true,
@@ -220,11 +221,15 @@ module.exports = () => {
 			new BundleAnalyzerPlugin(),
 
 			/** ContextReplacementPlugin helps to run all the angular libraries  */
+
+			/*
 			new ContextReplacementPlugin(
 				/angular(\\|\/)core/,
 				helpers.root('src'),
 				{}
 			),
+			*/
+
 			/**
 			 * This plugin uses cssnano to optimize and minify your CSS.
 			 * more accurate with source maps and assets using query string, allows caching and works in parallel mode

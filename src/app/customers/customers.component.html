@@ -1,0 +1,11 @@
+<div class="customers">
+    <h1>Customer details</h1>
+    <div class="customer-wrap">
+        <div *ngFor="let customer of customerDetails; trackBy:trackCustomerDetailsFn">
+            <p>{{customer.name}}</p>
+            <p>{{customer.age}}</p>
+            <p>{{customer.address}}</p>
+        </div>
+    </div>
+  
+</div>

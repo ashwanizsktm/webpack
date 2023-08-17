@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 @Component({
     selector: 'app-root',
@@ -6,13 +5,10 @@ import { Component } from '@angular/core';
 })
 
 export class AppComponent {
-    constructor(private http: HttpClient) {}
+    constructor() {}
     sendData: string = '';
-    title = "Angular";
+    title = "webpack custom configuratoin with Angular";
     
     ngOnInit() {
-        this.http.get('https://jsonplaceholder.typicode.com/users/1').subscribe(data => {
-            this.sendData = data['name']
-        })
     }
 }

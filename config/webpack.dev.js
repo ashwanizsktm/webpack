@@ -105,6 +105,7 @@ module.exports = () => {
             new HtmlWebpackPlugin({
                 title: 'webpack angular',
                 template: "src/index.html",
+                inject: 'body',
             }),
 
             new MiniCssExtractPlugin({
@@ -112,11 +113,11 @@ module.exports = () => {
                 chunkFilename: '[id].css'
             }),
 
-            new ContextReplacementPlugin(
-                /angular(\\|\/)core/,
-                helpers.root('src'),
-                {}
-            ),
+            // new ContextReplacementPlugin(
+            //     /angular(\\|\/)core/,
+            //     helpers.root('src'),
+            //     {}
+            // ),
 
             new AngularWebpackPlugin(),
 

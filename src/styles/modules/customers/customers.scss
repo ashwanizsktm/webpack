@@ -1,0 +1,25 @@
+customers {
+    .customers {
+        h1 {
+            color: #fff;
+            font-size: 20px;
+        }
+
+        .customer-wrap {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+
+            div {
+                width: 250px;
+                height: 270px;
+                text-align: center;
+                color: #fff;
+                font-size: 2rem;
+                padding: 10px;
+                box-shadow: 5px 5px 8px #bcb9b9;
+                border-radius: 10px;
+            }
+        }
+    }
+}

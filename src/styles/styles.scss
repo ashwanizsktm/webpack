@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-// components
-@import './components/index';
+// modules
+@import 'modules/index';
+@import 'app/index';
 
 
 body{
     margin: 0;
+    font-size: 16px;
+    background-color: #222;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Inter', sans-serif;
 }

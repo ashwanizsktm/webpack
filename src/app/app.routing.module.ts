@@ -1,30 +1,27 @@
-import { AppComponent } from './app.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PreloadAllModules } from '@angular/router';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 const routes: Routes = [
-  {path: '', component: AppComponent},
+	{
+		path: 'customers',
+		loadChildren: () => import('./customers/customers.module').then(m => m.CustomersModule)
+	},
+	{
+		path: 'products',
+		loadChildren: () => import('./procucts/products.module').then(m => m.ProductsModule)
+	},
+	{ path: '**', redirectTo: '/', pathMatch: 'full' }
 
-  {
-    path: 'components',
-    loadChildren: () => import('./components/components.module').then(m => m.ComponentsModule)
-  },
-
-  {
-    path: 'products',
-    loadChildren: () => import('./procucts/products.module').then(m => m.ProductsModule)
-  },
- 
-
-//   {path: '**', component: AppComponent}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes,
-    {
-      preloadingStrategy: PreloadAllModules
-    })],
-  exports: [RouterModule]
+	// RouterModule.forRoot(routes, { useHash: true })
+	imports: [RouterModule.forRoot(routes,
+		{
+			preloadingStrategy: PreloadAllModules
+		})],
+	exports: [RouterModule]
 })
 export class AppRoutingModule { }

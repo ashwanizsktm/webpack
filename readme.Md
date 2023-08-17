@@ -1,4 +1,4 @@
-# this is the webpack tutorial
+# this is the webpack configuration with angular
 
 Ways that can be followed to update angular version
 

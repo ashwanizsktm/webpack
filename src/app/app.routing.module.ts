@@ -17,9 +17,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-	// RouterModule.forRoot(routes, { useHash: true })
 	imports: [RouterModule.forRoot(routes,
 		{
+			useHash: true,
 			preloadingStrategy: PreloadAllModules
 		})],
 	exports: [RouterModule]

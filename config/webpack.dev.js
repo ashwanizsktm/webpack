@@ -1,36 +1,32 @@
-// const {merge} = require('webpack-merge'); // used to merge webpack configs
-// const common = require('./webpack.common'); // the settings that are common to prod and dev
-
-// module.exports = () => {
-//     return merge(common, {
-//         mode: 'development',
-
-//         devServer: {
-//             historyApiFallback: true,
-//             port: 8080
-//         },
-//     });
-// }
-
-
 const path = require("path");
 const helpers = require("./helper");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const DefinePlugin = require('webpack/lib/DefinePlugin');
 const { ContextReplacementPlugin } = require("webpack");
 const { AngularWebpackPlugin } = require('@ngtools/webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
-module.exports = (options) => {
-    const isDev = options.WEBPACK_SERVE;
-    const isProd = !isDev
+const ASSET_PATH = process.env.ASSET_PATH || '/';
 
+module.exports = () => {
+    /*
+    this expression is not required now. while using webpack merge needs to be uncommented.
+    const isDev = process.env.NODE_ENV === 'dev' ? true: false;
+    const isProd = !isDev;
+   */
     return {
         mode: 'development',
 
         entry: {
             pollyfills: ['/src/polyfills'],
             main: ['/src/main']
+        },
+
+        output: {
+            path: helpers.root('dist'),
+            publicPath: ASSET_PATH,
+            filename: "[name].bundle.js",
+            chunkFilename: "[id].chunk.js",
         },
 
         resolve: {
@@ -52,16 +48,16 @@ module.exports = (options) => {
                     exclude: [helpers.root('src/index.html')]
                 },
 
+                /*
+                need to debug to add hash and minification.
                 {
-                    test: /\.(svg|png|jpg|gif|eot|woff2|ttf)$i/,
-                    use: {
-                        loader: "file-loader",
-                        options: {
-                            name: isProd ? "[path][name].[hash].[ext]" : "[path][name].[ext]",
-                            outputPath: "imgs"
-                        }
+                    test: /\.(jpe?g|png|gif|svg)$/i,
+                    loader: 'file-loader',
+                    options: {
+                        name: '/assets/images/[name].[ext]'
                     }
                 },
+                */
 
                 {
                     test: /\.[cm]?js$/,
@@ -83,7 +79,9 @@ module.exports = (options) => {
                 {
                     test: /\.(css|scss)$/i,
                     use: [
-                        isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+                        {
+                            loader: "style-loader"
+                        },
                         {
                             loader: 'css-loader'
                         },
@@ -91,37 +89,27 @@ module.exports = (options) => {
                             loader: "sass-loader"
                         }
                     ],
-                    include : [helpers.root('src', 'styles')]
+                    include: [helpers.root('src', 'styles')]
                 }
             ]
         },
         plugins: [
-      /*
-       * Plugin: HtmlWebpackPlugin
-       * Description: Simplifies creation of HTML files to serve your webpack bundles.
-       * This is especially useful for webpack bundles that include a hash in the filename
-       * which changes every compilation.
-       *
-       * See: https://github.com/ampedandwired/html-webpack-plugin
-       */
+            /*
+             * Plugin: HtmlWebpackPlugin
+             * Description: Simplifies creation of HTML files to serve your webpack bundles.
+             * This is especially useful for webpack bundles that include a hash in the filename
+             * which changes every compilation.
+             *
+             * See: https://github.com/ampedandwired/html-webpack-plugin
+             */
             new HtmlWebpackPlugin({
-                title: 'corporate treasury',
+                title: 'webpack angular',
                 template: "src/index.html",
-                gtmKey: '', // Google Tag Manager key
-                minify: isProd
-                    ? {
-                        caseSensitive: true,
-                        collapseWhitespace: true,
-                        keepClosingSlash: true,
-                        removeAttributeQuotes: true,
-                        removeComments: true
-                    }
-                    : false
             }),
 
             new MiniCssExtractPlugin({
-                filename: isDev ? '[name].css' : '[name].[hash].css',
-                chunkFilename: isDev ? '[id].css' : '[id].[hash].css'
+                filename: '[name].css',
+                chunkFilename: '[id].css'
             }),
 
             new ContextReplacementPlugin(
@@ -129,13 +117,18 @@ module.exports = (options) => {
                 helpers.root('src'),
                 {}
             ),
-            
+
             new AngularWebpackPlugin(),
 
-            new DefinePlugin({
-                'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-            })
-        ],
+            	/*
+			* this plugins are actually copying assets from src and putting into the dist 
+			* without adding contenthash and minification so commenting for now.
+			*/
+			new CopyWebpackPlugin({
+				patterns: [
+					{ from: 'src/assets', to: 'assets' }
+				]
+			}),
+        ]
     }
 }
-

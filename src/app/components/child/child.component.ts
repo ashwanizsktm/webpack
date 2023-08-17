@@ -6,10 +6,10 @@ import { Component, Input } from '@angular/core';
 })
 
 export class ChildComponent {
-     data_value: string = '';
-    @Input() set getData(data) {
-        this.data_value = data;
-    }
+    //  data_value: string = '';
+    // @Input() set getData(data) {
+    //     this.data_value = data;
+    // }
 
     constructor() {}
 }

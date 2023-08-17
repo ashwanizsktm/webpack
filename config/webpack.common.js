@@ -5,22 +5,22 @@ const DefinePlugin = require('webpack/lib/DefinePlugin');
 const ContextReplacementPlugin = require("webpack/lib/ContextReplacementPlugin");
 const { AngularWebpackPlugin } = require('@ngtools/webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const ASSET_PATH = process.env.ASSET_PATH || '/';
 
-const entry = {
-    polyfills: 'src/polyfills.ts',
-    main: 'src/main.ts'
-};
-module.exports = (options) => {
+
+module.exports = () => {
     const isDev = process.env.NODE_ENV === 'dev' ? true: false;
-    const isProd = process.env.NODE_ENV === 'prod' ? true: false;
-    console.log("dev=>",isDev, "isProd=>", isProd);
+    const isProd = !isDev;
 
     return {
-        entry: entry,
-        publicPath: '/',
+        pollyfills: ['/src/polyfills'],
+        main: ['/src/main'],
+
+        publicPath: ASSET_PATH,
 
         resolve: {
-            extensions: ['.ts', '.js', '.json', '.tsx'],
+            extensions: ['.ts', '.js', '.json'],
 
             modules: [helpers.root('src'), helpers.root('node_modules')],
 
@@ -28,6 +28,10 @@ module.exports = (options) => {
                 "@app": path.resolve(helpers.root('src'), 'app'),
                 "@configs": path.resolve(helpers.root('src'), 'configs')
             },
+
+            fallback: {
+                "path": false
+            }
         },
 
         module: {
@@ -62,9 +66,9 @@ module.exports = (options) => {
                     test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
                     loader: '@ngtools/webpack'
                 },
-
+                
                 {
-                    test: /\.(css|scss)$/i,
+                    test: /\.(c|sc)ss)$/i,
                     use: [
                         isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
                         {
@@ -88,7 +92,7 @@ module.exports = (options) => {
              * See: https://github.com/ampedandwired/html-webpack-plugin
              */
             new HtmlWebpackPlugin({
-                title: 'corporate treasury',
+                title: 'webpack angular',
                 template: "src/index.html",
                 gtmKey: '', // Google Tag Manager key
                 minify: isProd
@@ -113,7 +117,15 @@ module.exports = (options) => {
                 {}
             ),
 
-            new AngularWebpackPlugin(),
+            new CopyWebpackPlugin({
+                patterns: [
+                    { from: 'src/assets', to: 'assets' }
+                ]
+            }),
+
+            new AngularWebpackPlugin({
+                tsconfig: '../tsconfig.json'
+            }),
 
             new DefinePlugin({
                 'NODE_ENV': JSON.stringify(process.env.NODE_ENV),

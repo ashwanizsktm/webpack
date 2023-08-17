@@ -21,7 +21,8 @@
 		],
 	    "paths": {
 			"@app/*": ["app/*"],
-			"@configs/*":["configs/*"]
+			"@configs/*":["configs/*"],
+			"assets": ["assets/images/"]
         }
 	},
     "exclude": [

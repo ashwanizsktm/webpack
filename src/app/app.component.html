@@ -1,4 +1,16 @@
 <h1>custom webpack configuraton {{title}} {{8+8}} version</h1>
 <div class="container">
-    <child [getData]="sendData" />
+    <div>
+        <h2>using svg images</h2>
+        <!-- the comments we are using it here -->
+        <img src="/assets/images/issuer-logo.svg" alt="logo" height="100" width="100">
+        <img src="/assets/images/logo.svg" alt="logo" height="100" width="100">
+    </div>
+
+    <nav>
+        <a routerLink="components" routerLinkActive="router-link-active">components</a>
+        <a routerLink="products" routerLinkActive="router-link-active">products</a>
+    </nav>
+    <router-outlet></router-outlet>
 </div>
+

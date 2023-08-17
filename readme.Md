@@ -16,3 +16,7 @@ Ways that can be followed to update angular version
     - differential bundling - (it helps to create a bundle in such a way that whenever app is hosted on diffenet browser it'll take care of everything)
     - Error handling - gives clear error messages
     - tree shaking - remove unused code (js and css and commnets in production)
+
+# 1. Development server ====>   npm start
+# 2. Production build =====> npm run build
+# 3. Deployment ===> firebase deploy

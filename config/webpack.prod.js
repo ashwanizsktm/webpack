@@ -8,210 +8,250 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const {merge} = require("webpack-merge");
-const commonWebpackConfig = require("./webpack.common")
+// const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 // this all plugins are in the common as of now common is not getting merged with dev or prod env
 // so we are using some of the samw config in dev and prod mode.
 
 const path = require("path");
 const helpers = require("./helper");
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const DefinePlugin = require('webpack/lib/DefinePlugin');
-// const ContextReplacementPlugin = require("webpack/lib/ContextReplacementPlugin");
-// const { AngularWebpackPlugin } = require('@ngtools/webpack');
-// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ContextReplacementPlugin = require("webpack/lib/ContextReplacementPlugin");
+const { AngularWebpackPlugin } = require('@ngtools/webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
+const images = helpers.images;
 
-module.exports = (options) => {
-    const isProd = options.WEBPACK_BUILD;
-    const isDev = !isProd;
+module.exports = () => {
+	/*
+   this expression is not required now. while using webpack merge needs to be uncommented.
+   const isDev = process.env.NODE_ENV === 'dev' ? true: false;
+   const isProd = !isDev;
+  */
 
-    return merge(commonWebpackConfig, {
-        mode: 'production',
-        /**
-         * recommended in webpack 5 devtools: sourceMap is not required in prod for some reasons
-         * for more details explanation see the docs
-         * see:- https://webpack.js.org/configuration/devtool/#production
-        */
+	return {
+		mode: 'production',
+		/**
+		 * recommended in webpack 5 devtools: sourceMap is not required in prod for some reasons
+		 * for more details explanation see the docs
+		 * see:- https://webpack.js.org/configuration/devtool/#production
+		*/
 
-        // entry: {
-        //     pollyfills: ['/src/polyfills'],
-        //     main: ['/src/main']
-        // },
+		entry: {
+			pollyfills: ['/src/polyfills'],
+			main: ['/src/main'],
+		},
 
-        output: {
-            path: helpers.root('dist'),
-            publicPath: "",
-            filename: "[name].[contenthash].bundle.js",
-        },
+		output: {
+			path: helpers.root('dist'),
+			publicPath: ASSET_PATH,
+			filename: "[name].[contenthash].bundle.js",
+			chunkFilename: "[id].[contenthash].chunk.js",
+		},
 
-        // resolve: {
-        //     extensions: ['.ts', '.js', '.json', '.tsx'],
-        //     modules: [helpers.root('src'), helpers.root('node_modules')],
-        //     alias: {
-        //         "@app": path.resolve(helpers.root('src'), 'app'),
-        //         "@configs": path.resolve(helpers.root('src'), 'configs')
-        //     },
-        // },
+		resolve: {
+			extensions: ['.ts', '.js', '.json', '.tsx', '.jpg'],
+			modules: [helpers.root('src'), helpers.root('node_modules')],
+			alias: {
+				"@app": path.resolve(helpers.root('src'), 'app'),
+				"@configs": path.resolve(helpers.root('src'), 'configs')
+			},
+		},
 
-        // module: {
-        //     rules: [
-        //         {
-        //             test: /\.html$/i,
-        //             type: 'asset/resource',
-        //             exclude: [helpers.root('src/index.html')]
-        //         },
+		module: {
+			rules: [
+				{
+					test: /\.html$/i,
+					type: 'asset/resource',
+					exclude: [helpers.root('src/index.html')]
+				},
 
-        //         {
-        //             test: /\.(svg|png|jpg|jpeg|gif|eot|woff2|ttf)$i/,
-        //             type: "asset/resourse", 
-        //             use: {
-        //                 options: {
-        //                     name: isProd ? "[path][name].[hash].[ext]" : "[path][name].[ext]",
-        //                     outputPath: helpers.root('dist', 'assets')
-        //                 }
-        //             }
-        //         },
-        //       /**
-        //        * File loader for supporting images, for example, in CSS files.*/
-        //         {
-        //             test: /\.(jpg|png|gif|svg)$/,
-        //             use: {
-        //                 options: {
-        //                     loader: 'file-loader',
-        //                     name: "[name].[contenthash].[ext]",
-        //                 }
-        //             }
-        //         },
+				/* 
+				 Need to debug to add contenthash and minification & adding svg loader.
+				{
+					test: /\.(jpe?g|png|gif|svg)$/i,
+					loader: 'file-loader',
+					options: {
+						name: '/assets/images/[name].[ext]'
+					}
+				},
+				*/
 
-        //         {
-        //             test: /\.(eot|woff2?|svg|ttf)([\?]?.*)$/,
-        //             use: 'file-loader'
-        //         },
-        //         {
-        //             test: /\.[cm]?js$/,
-        //             use: {
-        //                 loader: 'babel-loader',
-        //                 options: {
-        //                     cacheDirectory: true,
-        //                     compact: false,
-        //                     plugins: ['@angular/compiler-cli/linker/babel'],
-        //                 },
-        //             },
-        //         },
+				/**
+				 * need to debug entry point is not getting inserted
+				 *  {
+						  test: /\.(png|jpe?g|gif|svg)$/i,
+						  loader: ImageMinimizerPlugin.loader,
+					},
+				 */
 
-        //         {
-        //             test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
-        //             loader: '@ngtools/webpack'
-        //         },
+				{
+					test: /\.[cm]?js$/,
+					use: {
+						loader: 'babel-loader',
+						options: {
+							cacheDirectory: true,
+							compact: false,
+							plugins: ['@angular/compiler-cli/linker/babel'],
+						},
+					}
+				},
 
-        //         {
-        //             test: /\.(css|scss)$/i,
-        //             use: [
-        //                 isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-        //                 {
-        //                     loader: 'css-loader'
-        //                 },
-        //                 {
-        //                     loader: "sass-loader"
-        //                 }
-        //             ],
-        //             include: [helpers.root('src', 'styles')]
-        //         }
-        //     ]
-        // },
+				{
+					test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
+					loader: '@ngtools/webpack'
+				},
+				{
+					test: /\.(c|sc)ss$/i,
+					use: [MiniCssExtractPlugin.loader, { loader: 'css-loader' }, { loader: "sass-loader" }],
+					include: [helpers.root('src', 'styles')]
+				}
+			]
+		},
 
-        optimization: {
-            minimizer: [
-                new TerserPlugin({
-                    extractComments: false
-                }
-                 
-                ),
-                new CssMinimizerPlugin(),
-            ],
+		optimization: {
+			minimizer: [
+				new TerserPlugin({
+					extractComments: false,
+				}),
+				new CssMinimizerPlugin(),
 
-            splitChunks: {
-                chunks: 'all'
-            },
-            /** HashedModuleIdsPlugin → optimization.moduleIds: 'hashed'
-             * replaced in webpack 5
-             */
-            moduleIds: 'deterministic'
-        },
+				/*
+				* Need to debug the entry points for images are not getting inserted
+				  new ImageMinimizerPlugin({
+					minimizer: {
+					  implementation: ImageMinimizerPlugin.imageminMinify,
+					  options: {
+						// Lossless optimization with custom option
+						// Feel free to experiment with options for better result for you
+						plugins: [
+						  ["gifsicle", { interlaced: true }],
+						  ["jpegtran", { progressive: true }],
+						  ["optipng", { optimizationLevel: 5 }],
+						  // Svgo configuration here https://github.com/svg/svgo#configuration
+						  [
+							"svgo",
+							{
+							  plugins: [
+								{
+								  name: "preset-default",
+								  params: {
+									overrides: {
+									  removeViewBox: false,
+									  addAttributesToSVGElement: {
+										params: {
+										  attributes: [
+											{ xmlns: "http://www.w3.org/2000/svg" },
+										  ],
+										},
+									  },
+									},
+								  },
+								},
+							  ],
+							},
+						  ],
+						],
+					  },
+					},
+				  }),
+				*/
+			],
 
-        plugins: [
-            /*
-             * Plugin: HtmlWebpackPlugin
-             * Description: Simplifies creation of HTML files to serve your webpack bundles.
-             * This is especially useful for webpack bundles that include a hash in the filename
-             * which changes every compilation.
-             * See: https://github.com/ampedandwired/html-webpack-plugin
-             */
+			minimize: true,
 
-            // new HtmlWebpackPlugin({
-            //     title: 'corporate treasury',
-            //     template: "src/index.html",
-            //     gtmKey: '', // Google Tag Manager key
-            //     minify: isProd
-            //         ? {
-            //             caseSensitive: true,
-            //             collapseWhitespace: true,
-            //             keepClosingSlash: true,
-            //             removeAttributeQuotes: true,
-            //             removeComments: true
-            //         }
-            //         : false
-            // }),
+			splitChunks: {
+				chunks: 'all'
+			},
 
-            // new MiniCssExtractPlugin({
-            //     filename: isDev ? '[name].css' : '[name].[contenthash].css',
-            // }),
+			/** HashedModuleIdsPlugin → optimization.moduleIds: 'deterministic'
+			 * replaced in webpack 5
+			 * deterministic option is useful for long term caching, but still results in smaller bundles compared to hashed
+			 */
+			moduleIds: 'deterministic',
+		},
 
-            new ReplaceInFileWebpackPlugin([{
-                dir: 'dist',
-                test: /\.js$/,
-                rules: [{
-                    search: /\/assets\/images/ig,
-                    replace: ASSET_PATH + 'assets/images'
-                }]
-            }]),
+		plugins: [
+			/*
+			 * Plugin: HtmlWebpackPlugin
+			 * Description: Simplifies creation of HTML files to serve your webpack bundles.
+			 * This is especially useful for webpack bundles that include a hash in the filename
+			 * which changes every compilation.
+			 * See: https://github.com/ampedandwired/html-webpack-plugin
+			 */
 
-            /**
-             * Visualize size of webpack output files with an interactive zoomable treemap.
-             * see: - https://github.com/webpack-contrib/webpack-bundle-analyzer 
-             */
-            new BundleAnalyzerPlugin(),
+			new HtmlWebpackPlugin({
+				title: 'webpack angular',
+				template: "src/index.html",
+				gtmKey: '', // Google Tag Manager key
+				minify: {
+					caseSensitive: true,
+					collapseWhitespace: true,
+					keepClosingSlash: true,
+					removeAttributeQuotes: true,
+					removeComments: true
+				}
+			}),
 
-            // new ContextReplacementPlugin(
-            //     /angular(\\|\/)core/,
-            //     helpers.root('src'),
-            //     {}
-            // ),
-            /**
-             * This plugin uses cssnano to optimize and minify your CSS.
-             * more accurate with source maps and assets using query string, allows caching and works in parallel mode
-             * see:- https://www.npmjs.com/package/css-minimizer-webpack-plugin
-             */
-            new CssMinimizerPlugin(),
+			new MiniCssExtractPlugin({
+				filename: '[name].[contenthash].css'
+			}),
 
-            /**
-             * Webpack 5.x plugin for the Angular Ahead-of-Time compiler. The plugin also supports Angular JIT mode.
-             */
-            // new AngularWebpackPlugin(),
+			/**
+			 * The [contenthash] placeholder is the best option because it depends on the sprite content.
+			 *  Cache placeholders are expensive in build performance, use it only in production mode.
+			 */
 
-            /**
-             * A webpack plugin to remove/clean your build folder(s).
-             * see: - https://www.npmjs.com/package/clean-webpack-plugin
-            */
-            new CleanWebpackPlugin(),
+			new ReplaceInFileWebpackPlugin([{
+				dir: 'dist',
+				test: /\.js$/,
+				rules: [{
+					search: /\/assets\/images/,
+					replace: ASSET_PATH + 'assets/images'
+				}]
+			}]),
 
-            // new DefinePlugin({
-            //     'NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-            //     'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
-            // })
-        ],
-    });
+			/**
+			 * Visualize size of webpack output files with an interactive zoomable treemap.
+			 * see: - https://github.com/webpack-contrib/webpack-bundle-analyzer 
+			 */
+			new BundleAnalyzerPlugin(),
+
+			/** ContextReplacementPlugin helps to run all the angular libraries  */
+			new ContextReplacementPlugin(
+				/angular(\\|\/)core/,
+				helpers.root('src'),
+				{}
+			),
+			/**
+			 * This plugin uses cssnano to optimize and minify your CSS.
+			 * more accurate with source maps and assets using query string, allows caching and works in parallel mode
+			 * see:- https://www.npmjs.com/package/css-minimizer-webpack-plugin
+			 */
+			new CssMinimizerPlugin(),
+
+			/**
+			 * Webpack 5.x plugin for the Angular Ahead-of-Time compiler. The plugin also supports Angular JIT mode.
+			 */
+			new AngularWebpackPlugin(),
+
+			/**
+			 * A webpack plugin to remove/clean your build folder(s).
+			 * see: - https://www.npmjs.com/package/clean-webpack-plugin
+			*/
+			new CleanWebpackPlugin(),
+
+			/*
+			* this plugins are actually copying assets from src and putting into the dist 
+			* without adding contenthash and minification so commenting for now.
+			*/
+			new CopyWebpackPlugin({
+				patterns: [
+					{ from: 'src/assets', to: 'assets' }
+				]
+			}),
+		],
+	};
 }

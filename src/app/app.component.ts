@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 export class AppComponent {
     constructor() {}
     sendData: string = '';
-    title = "webpack custom configuratoin with Angular";
+    title = "webpack custom configuratoin with Angular 16";
     
     ngOnInit() {
     }

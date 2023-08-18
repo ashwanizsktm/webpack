@@ -1,9 +1,15 @@
 products {
     .products {
+        text-align: center;
+
         h1 {
-            margin: 0 0 20px 0;
+            margin: 20px 0 20px 0;
             font-size: 2rem;
             color: #fff;
+        }
+
+        img {
+            margin: 20px;
         }
     }
 }

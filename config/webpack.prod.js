@@ -1,4 +1,25 @@
+/***
+ * Ref: https://github.com/mishoo/UglifyJS2/tree/harmony#minify-options
+ * @param supportES2015
+ * @param enableCompress disabling compress could improve the performance, see https://github.com/webpack/webpack/issues/4558#issuecomment-352255789
+ * @returns {{ecma: number, warnings: boolean, ie8: boolean, mangle: boolean, compress: {pure_getters: boolean, passes: number}, output: {ascii_only: boolean, comments: boolean}}}
+ */
+function getTerserOptions(supportES2015, enableCompress) {
+	const uglifyCompressOptions = {
+		pure_getters: true /* buildOptimizer */,
+		passes: 2 /* buildOptimizer */
+	};
 
+	return {
+		ecma: supportES2015 ? 6 : 5,
+		ie8: false,
+		mangle: true,
+		compress: enableCompress ? uglifyCompressOptions : false,
+		output: {
+			ascii_only: true,
+		}
+	};
+}
 /**
  * Webpack Plugins 
  * these plugins are only required in production.
@@ -8,36 +29,29 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-// const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 // this all plugins are in the common as of now common is not getting merged with dev or prod env
-// so we are using some of the samw config in dev and prod mode.
+// so we are using some of the same config in dev and prod mode.
 
 const path = require("path");
 const helpers = require("./helper");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ContextReplacementPlugin = require("webpack/lib/ContextReplacementPlugin");
+// const ContextReplacementPlugin = require("webpack/lib/ContextReplacementPlugin");
 const { AngularWebpackPlugin } = require('@ngtools/webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
-const images = helpers.images;
 
 module.exports = () => {
 	/*
-   this expression is not required now. while using webpack merge needs to be uncommented.
-   const isDev = process.env.NODE_ENV === 'dev' ? true: false;
-   const isProd = !isDev;
-  */
+		this expression is not required now. while using webpack merge needs to be uncommented.
+		const isDev = process.env.NODE_ENV === 'dev' ? true: false;
+		const isProd = !isDev;
+   */
 
 	return {
 		mode: 'production',
-		/**
-		 * recommended in webpack 5 devtools: sourceMap is not required in prod for some reasons
-		 * for more details explanation see the docs
-		 * see:- https://webpack.js.org/configuration/devtool/#production
-		*/
 
 		entry: {
 			pollyfills: ['/src/polyfills'],
@@ -79,13 +93,17 @@ module.exports = () => {
 				},
 				*/
 
-				/**
-				 * need to debug entry point is not getting inserted
-				 *  {
-						  test: /\.(png|jpe?g|gif|svg)$/i,
-						  loader: ImageMinimizerPlugin.loader,
-					},
-				 */
+			   // File loader for supporting images, for example, in CSS files.
+				{
+					test: /\.(jpg|png|gif|svg)$/,
+					use: 'file-loader'
+				},
+
+				// File loader for supporting fonts, for example, in CSS files.
+				{
+					test: /\.(eot|woff2?|ttf)([\?]?.*)$/,
+					use: 'file-loader'
+				},
 
 				{
 					test: /\.[cm]?js$/,
@@ -96,7 +114,7 @@ module.exports = () => {
 							compact: false,
 							plugins: ['@angular/compiler-cli/linker/babel'],
 						},
-					}
+					},
 				},
 
 				{
@@ -116,52 +134,10 @@ module.exports = () => {
 				new TerserPlugin({
 					extractComments: false,
 				}),
+
 				new CssMinimizerPlugin(),
-
-				/*
-				* Need to debug the entry points for images are not getting inserted
-				  new ImageMinimizerPlugin({
-					minimizer: {
-					  implementation: ImageMinimizerPlugin.imageminMinify,
-					  options: {
-						// Lossless optimization with custom option
-						// Feel free to experiment with options for better result for you
-						plugins: [
-						  ["gifsicle", { interlaced: true }],
-						  ["jpegtran", { progressive: true }],
-						  ["optipng", { optimizationLevel: 5 }],
-						  // Svgo configuration here https://github.com/svg/svgo#configuration
-						  [
-							"svgo",
-							{
-							  plugins: [
-								{
-								  name: "preset-default",
-								  params: {
-									overrides: {
-									  removeViewBox: false,
-									  addAttributesToSVGElement: {
-										params: {
-										  attributes: [
-											{ xmlns: "http://www.w3.org/2000/svg" },
-										  ],
-										},
-									  },
-									},
-								  },
-								},
-							  ],
-							},
-						  ],
-						],
-					  },
-					},
-				  }),
-				*/
 			],
-
 			minimize: true,
-
 			splitChunks: {
 				chunks: 'all'
 			},
@@ -220,15 +196,15 @@ module.exports = () => {
 			 */
 			new BundleAnalyzerPlugin(),
 
-			/** ContextReplacementPlugin helps to run all the angular libraries  */
+			/** ContextReplacementPlugin helps to run all the angular dependencies  */
 
-			/*
-			new ContextReplacementPlugin(
-				/angular(\\|\/)core/,
-				helpers.root('src'),
-				{}
-			),
-			*/
+			
+			// new ContextReplacementPlugin(
+			// 	/angular(\\|\/)core/,
+			// 	helpers.root('src'),
+			// 	{}
+			// ),
+			
 
 			/**
 			 * This plugin uses cssnano to optimize and minify your CSS.

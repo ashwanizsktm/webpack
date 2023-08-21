@@ -13,7 +13,8 @@ module.exports = () => {
     this expression is not required now. while using webpack merge needs to be uncommented.
     const isDev = process.env.NODE_ENV === 'dev' ? true: false;
     const isProd = !isDev;
-   */
+    */
+
     return {
         mode: 'development',
 
@@ -46,6 +47,18 @@ module.exports = () => {
                     test: /\.html$/i,
                     use: 'raw-loader',
                     exclude: [helpers.root('src/index.html')]
+                },
+
+                // File loader for supporting images, for example, in CSS files.
+                {
+                    test: /\.(jpg|png|gif|svg)$/,
+                    use: 'file-loader'
+                },
+
+                // File loader for supporting fonts, for example, in CSS files.
+                {
+                    test: /\.(eot|woff2?|ttf)([\?]?.*)$/,
+                    use: 'file-loader'
                 },
 
                 /*
@@ -94,18 +107,17 @@ module.exports = () => {
             ]
         },
         plugins: [
-            /*
-             * Plugin: HtmlWebpackPlugin
-             * Description: Simplifies creation of HTML files to serve your webpack bundles.
-             * This is especially useful for webpack bundles that include a hash in the filename
-             * which changes every compilation.
-             *
-             * See: https://github.com/ampedandwired/html-webpack-plugin
-             */
+            //         /*
+            //          * Plugin: HtmlWebpackPlugin
+            //          * Description: Simplifies creation of HTML files to serve your webpack bundles.
+            //          * This is especially useful for webpack bundles that include a hash in the filename
+            //          * which changes every compilation.
+            //          *
+            //          * See: https://github.com/ampedandwired/html-webpack-plugin
+            //          */
             new HtmlWebpackPlugin({
                 title: 'webpack angular',
                 template: "src/index.html",
-                inject: 'body',
             }),
 
             new MiniCssExtractPlugin({
@@ -113,23 +125,30 @@ module.exports = () => {
                 chunkFilename: '[id].css'
             }),
 
-            // new ContextReplacementPlugin(
-            //     /angular(\\|\/)core/,
-            //     helpers.root('src'),
-            //     {}
-            // ),
+            new ContextReplacementPlugin(
+                /angular(\\|\/)core/,
+                helpers.root('src'),
+                {}
+            ),
 
             new AngularWebpackPlugin(),
 
-            	/*
-			* this plugins are actually copying assets from src and putting into the dist 
-			* without adding contenthash and minification so commenting for now.
-			*/
-			new CopyWebpackPlugin({
-				patterns: [
-					{ from: 'src/assets', to: 'assets' }
-				]
-			}),
-        ]
+            /*
+                    * this plugins are actually copying assets from src and putting into the dist 
+                    * without adding contenthash and minification so commenting for now.
+              */
+
+            new CopyWebpackPlugin({
+                patterns: [
+                    { from: 'src/assets', to: 'assets' }
+                ]
+            }),
+        ],
+
+        devServer: {
+            port: 8080,
+            host: 'localhost',
+            historyApiFallback: true,
+        }
     }
 }
